@@ -34,14 +34,14 @@ Ensure you have the YOLOv8 weights file (`yolov8s.pt`). You can download it from
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository_url>
-cd <repository_folder>
+git clone https://github.com/PratikMitkar/codealpha_tasks_4.git
+cd codealpha_tasks_4
 ```
 
 ### 2. Start the Streamlit Application
 Run the Streamlit app:
 ```bash
-streamlit run object_detection.py
+streamlit run object_detection_task_4.py
 ```
 
 ### 3. Control the Video Stream
