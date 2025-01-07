@@ -1,38 +1,36 @@
-# FAQ Chatbot with Flexible CSV Column Names
+# YOLO Object Detection with Streamlit
 
-This is an interactive FAQ chatbot built with **Streamlit** that allows users to upload a CSV file containing questions and answers. Users can ask questions, and the chatbot will find and display the most relevant answer based on text similarity. 
+This project demonstrates real-time object detection using the **YOLOv8 model** and displays the results in a **Streamlit** web interface. The application uses a live video feed from a webcam to detect objects and draws bounding boxes with class labels and confidence scores.
+
+---
 
 ## Features
-- **Flexible CSV Handling**: Automatically detects columns for questions and answers, even if they have different names.
-- **Similarity Models**: 
-  - Uses **TF-IDF** for text similarity.
-  - Can be extended to include advanced models like BERT.
-- **Dynamic Similarity Threshold**: Allows users to adjust the similarity threshold for better results.
-- **Sidebar FAQ Display**: Lists all questions from the FAQ dataset for quick reference.
-- **Error Handling**: Ensures the uploaded CSV file is valid and correctly formatted.
+
+- **Real-Time Object Detection**:
+  - Utilizes **YOLOv8** for high-accuracy object detection.
+- **Streamlit Integration**:
+  - Web-based UI for controlling the video stream and viewing detection results.
+- **Dynamic Bounding Boxes**:
+  - Bounding boxes with color-coded labels based on object classes.
+- **Confidence Threshold**:
+  - Filters detections with confidence scores below a defined threshold.
 
 ---
 
-## Requirements
+## Prerequisites
 
-### Python Libraries
-The following libraries are required to run the program:
-- `streamlit`
-- `pandas`
-- `transformers`
-- `scikit-learn`
-- `nltk`
-- `numpy`
-
-### Install the Dependencies
-Run the following command to install all required libraries:
+### 1. Install Required Libraries
+Install the dependencies using:
 ```bash
-pip install streamlit pandas transformers scikit-learn nltk numpy
+pip install ultralytics opencv-python-headless streamlit numpy
 ```
 
+### 2. Download YOLOv8 Model Weights
+Ensure you have the YOLOv8 weights file (`yolov8s.pt`). You can download it from the [Ultralytics YOLO GitHub Repository](https://github.com/ultralytics/ultralytics).
+
 ---
 
-## Usage
+## How to Run
 
 ### 1. Clone the Repository
 ```bash
@@ -40,84 +38,107 @@ git clone <repository_url>
 cd <repository_folder>
 ```
 
-### 2. Run the Program
-Start the Streamlit app by running:
+### 2. Start the Streamlit Application
+Run the Streamlit app:
 ```bash
-streamlit run chatbot.py
+streamlit run object_detection.py
 ```
 
-### 3. Upload the FAQ CSV File
-- The file should contain two columns: one for questions and one for answers.
-- Supported column names (case-insensitive):
-  - For questions: `question`, `questions`
-  - For answers: `answer`, `answers`
+### 3. Control the Video Stream
+- Click **Start Video Stream** to begin object detection.
+- Click **Stop Video Stream** to stop the video feed.
 
-### 4. Ask a Question
-- Type your question in the input box.
-- The chatbot will display the most relevant answer based on the selected similarity model.
+### 4. Quit the Application
+- Press the `q` key to exit the program at any time.
 
 ---
 
-## CSV File Format
+## Program Walkthrough
 
-Ensure your CSV file has columns for questions and answers. Example:
+1. **Model Loading**:
+   - Loads the **YOLOv8 small model (`yolov8s.pt`)** using the `ultralytics` library.
 
-| Question                   | Answer                                  |
-|----------------------------|-----------------------------------------|
-| What is your name?         | My name is FAQ Bot.                    |
-| How does the chatbot work? | It finds similar questions using TF-IDF.|
+2. **Web Interface**:
+   - Provides **Start** and **Stop** buttons for controlling the video stream.
+   - Displays the video feed with bounding boxes in real-time.
+
+3. **Object Detection**:
+   - Processes each video frame to detect objects.
+   - Draws bounding boxes around detected objects with:
+     - **Class Name**: Object type (e.g., person, car).
+     - **Confidence Score**: Detection confidence.
+     - **Dynamic Colors**: Unique colors for each class.
+
+4. **Video Handling**:
+   - Captures video from the default webcam.
+   - Uses OpenCV for frame processing.
 
 ---
 
-## Advanced Features
-- **Preprocessing**:
-  - Removes stop words and punctuation for better text matching.
-- **Similarity Models**:
-  - Currently supports **TF-IDF**.
-  - Easily extendable to advanced models like BERT.
-- **Caching**:
-  - Transformer models and similarity computations are cached for improved performance.
+## Example Output
+
+### Streamlit Interface
+- Displays a live video feed with real-time detection.
+- Objects are labeled with confidence scores, and bounding boxes are drawn dynamically.
+
+### Sample Detection
+- **Person**: Bounding box with label and confidence score.
+- **Car**: Bounding box with a distinct color and label.
 
 ---
 
 ## Customization
 
-### Add More Similarity Models
-To integrate more models:
-1. Add your model to the `model_choice` dropdown:
-   ```python
-   model_choice = st.selectbox(
-       "Choose the similarity model:",
-       ["TF-IDF", "BERT"]  # Add more options here
-   )
-   ```
-2. Implement a function for the new model and integrate it into the app logic.
-
-### Change Similarity Threshold
-Adjust the default similarity threshold in the slider:
+### Confidence Threshold
+Adjust the confidence threshold for detections by modifying:
 ```python
-similarity_threshold = st.slider("Set similarity threshold:", 0.0, 1.0, 0.2)
+if box.conf[0] > 0.4:  # Confidence threshold
 ```
+
+### Detection Colors
+Colors for classes are dynamically generated based on class indices. Customize the `getColours` function to modify color schemes.
+
+### Detection Classes
+The program automatically supports all classes defined in the YOLO model. To restrict detection to specific classes, you can filter them in the detection loop.
 
 ---
 
-## Known Issues
-- Limited to text-based questions and answers.
-- Requires a valid CSV format with appropriate columns.
+## Troubleshooting
+
+1. **Camera Not Detected**:
+   - Ensure your webcam is properly connected and accessible.
+   - Change the video capture device index if needed:
+     ```python
+     videoCap = cv2.VideoCapture(0)  # Replace 0 with 1 or higher for other cameras
+     ```
+
+2. **Slow Performance**:
+   - Use a lighter YOLO model (e.g., `yolov8n.pt`).
+   - Reduce the video resolution for faster processing.
+
+3. **Streamlit Not Loading**:
+   - Ensure all dependencies are installed.
+   - Run the app in a Python environment compatible with Streamlit.
 
 ---
 
 ## Contributing
-Contributions are welcome! Feel free to open issues or submit pull requests for new features, bug fixes, or documentation improvements.
+
+Contributions are welcome! Feel free to submit issues or pull requests for bug fixes, new features, or improvements.
 
 ---
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
 ---
 
 ## Acknowledgments
-- Built using [Streamlit](https://streamlit.io/).
-- Utilizes pre-trained models from [Hugging Face Transformers](https://huggingface.co/transformers/).
-- Inspired by modern FAQ systems and NLP techniques.
+
+- Built with the **Ultralytics YOLO** library.
+- Inspired by the power of real-time object detection and Streamlit's simplicity.
+
+---
+
+Enjoy real-time object detection with YOLO and Streamlit! 🚀
